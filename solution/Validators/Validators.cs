@@ -9,5 +9,6 @@ public static class Validators
     {
         //services.AddValidatorsFromAssemblyContaining<AnimalCreateRequestValidator>();
         services.AddTransient<IValidator<CreateAnimalRequest>, AnimalCreateRequestValidator>();
+        services.AddTransient<IValidator<ReplaceAnimalRequest>, AnimalReplaceRequestValidator>();
     }
 }

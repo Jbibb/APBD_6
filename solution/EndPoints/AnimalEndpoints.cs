@@ -12,6 +12,7 @@ public static class AnimalEndpoints
     {
         app.MapGet("api/animals", GetAnimals);
         app.MapPost("api/animals", CreateAnimal);
+        app.MapPut("api/animals", ReplaceAnimal);
     }
 
     private static IResult GetAnimals(IConfiguration configuration, string? orderBy)
@@ -67,6 +68,32 @@ public static class AnimalEndpoints
             Console.WriteLine(id);
 
             return Results.Created($"animals/{id}", new CreateAnimalResponse((int)id, request));
+        }
+    }
+
+    private static IResult ReplaceAnimal(IConfiguration configuration, IValidator<ReplaceAnimalRequest> validator, int id, ReplaceAnimalRequest request)
+    {
+        var validation = validator.Validate(request);
+        if (!validation.IsValid)
+        {
+            return Results.ValidationProblem(validation.ToDictionary());
+        }
+        
+        using (var sqlConnection = new SqlConnection(configuration.GetConnectionString("Default")))
+        {
+            var sqlCommand = new SqlCommand(
+                "UPDATE Animal SET Name = @1, Description = @2, Category = @3, Area = @4 WHERE IdAnimal = @5",
+                sqlConnection
+            );
+            sqlCommand.Parameters.AddWithValue("@1", request.Name);
+            sqlCommand.Parameters.AddWithValue("@2", request.Description);
+            sqlCommand.Parameters.AddWithValue("@3", request.Category);
+            sqlCommand.Parameters.AddWithValue("@4", request.Area);
+            sqlCommand.Parameters.AddWithValue("@5", id);
+            sqlCommand.Connection.Open();
+
+            var affectedRows = sqlCommand.ExecuteNonQuery();
+            return affectedRows == 0 ? Results.NotFound() : Results.NoContent();
         }
     }
     
