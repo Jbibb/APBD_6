@@ -88,7 +88,8 @@ public static class AnimalEndpoints
             sqlCommand.Parameters.AddWithValue("@1", request.Name);
             sqlCommand.Parameters.AddWithValue("@2", request.Description);
             sqlCommand.Parameters.AddWithValue("@3", request.Category);
-            sqlCommand.Parameters.AddWithValue("@4", request.Area);
+            sqlCommand.Parameters.AddWithValue("@4", request.Area);y
+                
             sqlCommand.Parameters.AddWithValue("@5", id);
             sqlCommand.Connection.Open();
 
